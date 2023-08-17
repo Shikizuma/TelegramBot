@@ -9,41 +9,19 @@ namespace TelegramBot
 	internal class Program
 	{
 		static string Token = GetJson("config.json");
-		static TelegramBotClient botClient = new TelegramBotClient(Token);
+		
 		static void Main(string[] args)
 		{
-            CancellationTokenSource source = new CancellationTokenSource();
-			CancellationToken cancellation = source.Token;
+			string excelFile = Path.Combine(Environment.CurrentDirectory, "base.xlsx");
+			ExcelApp app = new ExcelApp(excelFile);
+			var questions = app.GetQuestions();
+			var films = app.GetFilms();
 
-			ReceiverOptions options = new ReceiverOptions()
-			{
-				AllowedUpdates = {},
-			};
-
-			botClient.StartReceiving(BotTakeMessage, BotTakeError, options, cancellation);
-
-			Console.ReadKey();
+            MovieBot bot = new MovieBot(Token);
+			bot.Questions = questions;
+			bot.Films = films;
+			bot.Start();
         }
-
-		static async Task BotTakeMessage(ITelegramBotClient botClient, Update update, CancellationToken token)
-		{
-			if(update.Type == UpdateType.Message)
-			{
-				Message message = update.Message;
-				if (message.Type == MessageType.Text)
-				{
-					await botClient.SendTextMessageAsync(message.Chat.Id, $"Привіт, {message.Chat.FirstName}. Я працюю!");
-                    await Console.Out.WriteLineAsync(message.Chat.FirstName + ": " + message.Text);
-                }
-			
-			}
-			
-		}
-
-		static async Task BotTakeError(ITelegramBotClient botClient, Exception ex, CancellationToken token)
-		{
-
-		}
 
 		#region Get Json
 		static string GetJson(string filePath)

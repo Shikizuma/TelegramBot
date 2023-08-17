@@ -10,9 +10,9 @@ namespace TelegramBot.Interface
 {
 	internal interface IMovieBot
 	{
-		Film GetRandomFilm();
-		Film[] GetTopFilms(int count);
-		Film[] GetByTags(string search, SearchMode mode);
+		FilmModel GetRandomFilm();
+		FilmModel[] GetTopFilms(int count);
+		FilmModel[] GetByTags(string search, SearchMode mode);
 		string GetStatisticViews();
 		string GetResponce(string question);
 	}
