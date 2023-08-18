@@ -64,6 +64,46 @@ namespace TelegramBot
 			return films;
 		}
 
+        public string GetStatistics(FilmModel[] films)
+        {
+			sheet = book.Sheets["Films"];
+			for (int i = 0; i < films.Length; i++)
+            {
+                sheet.Cells[i+1, "D"] = films[i].Rate;
+                sheet.Cells[i+1, "E"] = films[i].Views;
+            }
+
+            var charts = sheet.ChartObjects() as ChartObjects;
+            var chartDiagram = charts.Add(300, 0, 300, 300);
+            var chart = chartDiagram.Chart;
+
+            Series series = (Series)chart.SeriesCollection().NewSeries();
+            series.Values = sheet.Range["D1:D10"];
+            series.XValues = sheet.Range["A1:A10"];
+
+            series.ApplyDataLabels();
+         
+            for (int i = 1; i <= series.Points().Count; i++)
+            {
+                Point point = series.Points(i);
+            }
+
+            chart.ChartType = XlChartType.xlColumnClustered;
+
+            string folder = $"{Environment.CurrentDirectory}\\images";
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            string path = $"{folder}\\{DateTime.Now.ToString("dd.MM.yyyy.ss.ffff") + ".png"}";
+            chart.Export(path, "PNG", false);
+
+            chart.Delete();
+
+			return path;
+        } 
+
 		public int Count
         {
             get

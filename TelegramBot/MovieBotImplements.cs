@@ -8,6 +8,7 @@ using Telegram.Bot;
 using TelegramBot.Enums;
 using TelegramBot.Interface;
 using TelegramBot.Models;
+using Telegram.Bot.Types.InputFiles;
 
 namespace TelegramBot
 {
@@ -40,7 +41,7 @@ namespace TelegramBot
 
 		public string GetStatisticViews()
 		{
-			throw new NotImplementedException();
+			return StatisticApp.GetStatistics(Films);
 		}
 
 		public FilmModel[] GetTopFilms(int count)

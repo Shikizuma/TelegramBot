@@ -10,6 +10,8 @@ using Telegram.Bot.Types;
 using Newtonsoft.Json.Linq;
 using TelegramBot.Models;
 using TelegramBot.Interface;
+using System.IO;
+using Telegram.Bot.Types.InputFiles;
 
 namespace TelegramBot
 {
@@ -18,7 +20,8 @@ namespace TelegramBot
 		TelegramBotClient botClient;
 		public QuestionModel[] Questions { private get; set; }
 		public FilmModel[] Films { private get; set; }
-		public MovieBot(string token)
+        public ExcelApp StatisticApp { private get; set; }
+        public MovieBot(string token)
         {
 			botClient = new TelegramBotClient(token);		
 		}
@@ -53,6 +56,30 @@ namespace TelegramBot
 				{
 					GetTextMessage(message);
 				}		
+			}
+			else if(update.Type == UpdateType.CallbackQuery)
+			{
+				await GetCallBack(update.CallbackQuery);
+			}
+		}
+
+		public async Task GetCallBack(CallbackQuery callback)
+		{
+			if (callback.Data == null)
+				return;
+
+			string[] messages = callback.Data.Split('|');
+
+			string filmName = messages[0];
+			int rate = Int32.Parse(messages[1]);
+
+			var film = Films.FirstOrDefault(f => f.Name == filmName);
+			if (film != null)
+			{
+				double currentViews = film.Views++;
+				double rating = (currentViews * film.Rate + rate) / film.Views;
+				film.Rate = rating;
+				await botClient.SendTextMessageAsync(callback.From.Id, "Рейтинг: " + film.Rate);
 			}
 		}
 
@@ -94,6 +121,16 @@ namespace TelegramBot
 				}
 				return;
 			}
+			if (message.Text == "Статистика")
+			{
+				var path = GetStatisticViews();
+				using (FileStream fs = new FileStream(path, FileMode.Open))
+				{
+					var file = new InputOnlineFile(fs, "statistic.png");
+					await botClient.SendPhotoAsync(message.Chat.Id, file, caption: "Статистика", replyMarkup: MarkupMenu.MainMenu);
+				}
+				return;
+			}
 
 			string responce = GetResponce(message.Text);
 			await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
@@ -104,13 +141,12 @@ namespace TelegramBot
 		public async Task ShowFilm(long chat, FilmModel film)
 		{
 			var buttons = InlineMenu.SetRate(film);
+
 			await botClient.SendPhotoAsync(
 				chatId: chat, 
 				photo: film.Image, 
 				caption: film.Name + "\n" + film.Description + "\n" + "Рейтинг: " + film.Rate, 
-				replyMarkup: buttons);
-			//await botClient.SendTextMessageAsync(chatId: chat, );
-
+				replyMarkup: buttons);		
 		}
 
 		async Task BotTakeError(ITelegramBotClient botClient, Exception ex, CancellationToken token)
