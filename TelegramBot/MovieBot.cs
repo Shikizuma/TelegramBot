@@ -54,6 +54,7 @@ namespace TelegramBot
 					if(message.Text == "Рандомний фільм")
 					{
 						var film = GetRandomFilm();
+						
 						await ShowFilm(message.Chat.Id, film);
 						return;
 					}
@@ -78,11 +79,11 @@ namespace TelegramBot
 						}
 						if(message.Text == "За назвою")
 						{
-							
+
 						}
 						if(message.Text == "Назад у меню")
 						{
-							await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.SearchMenu);
+							await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.MainMenu);
 						}
 						return;
 					}
@@ -96,9 +97,9 @@ namespace TelegramBot
 		
 		public async Task ShowFilm(long chat, FilmModel film)
 		{
+			var buttons = InlineMenu.SetRate(film);
 			await botClient.SendPhotoAsync(chatId: chat, photo: film.Image);
-			await botClient.SendTextMessageAsync(chatId: chat, film.Name +  "\n" + film.Description);
-			await botClient.SendTextMessageAsync(chatId: chat,  "Рейтинг: " + film.Rate);
+			await botClient.SendTextMessageAsync(chatId: chat, film.Name +  "\n" + film.Description + "\n" + "Рейтинг: " + film.Rate, replyMarkup: buttons);
 
 		}
 
