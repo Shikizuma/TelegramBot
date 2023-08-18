@@ -99,7 +99,7 @@ namespace TelegramBot
             string path = $"{folder}\\{DateTime.Now.ToString("dd.MM.yyyy.ss.ffff") + ".png"}";
             chart.Export(path, "PNG", false);
 
-            chart.Delete();
+            //chart.Delete();
 
 			return path;
         } 
