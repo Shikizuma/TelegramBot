@@ -68,8 +68,27 @@ namespace TelegramBot
 						return;
 					}
 
+					if (message.Text == "Знайти фільм")
+					{
+						await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть тип пошуку", replyMarkup: MarkupMenu.SearchMenu);
+
+						if(message.Text == "За жанром")
+						{
+
+						}
+						if(message.Text == "За назвою")
+						{
+							
+						}
+						if(message.Text == "Назад у меню")
+						{
+							await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.SearchMenu);
+						}
+						return;
+					}
+
 					string responce = GetResponce(message.Text);
-					await botClient.SendTextMessageAsync(message.Chat.Id, responce);
+					await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
 					await Console.Out.WriteLineAsync(message.Chat.FirstName + ": " + message.Text);
 				}		
 			}
