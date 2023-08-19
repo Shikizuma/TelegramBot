@@ -20,10 +20,12 @@ namespace TelegramBot
 		TelegramBotClient botClient;
 		public QuestionModel[] Questions { private get; set; }
 		public FilmModel[] Films { private get; set; }
-        public ExcelApp StatisticApp { private get; set; }
+		Dictionary<long, string> Context { get; set; }
+		public ExcelApp StatisticApp { private get; set; }
         public MovieBot(string token)
         {
-			botClient = new TelegramBotClient(token);		
+			botClient = new TelegramBotClient(token);	
+			Context = new Dictionary<long, string>();
 		}
 
 		public void Start()
@@ -85,6 +87,53 @@ namespace TelegramBot
 
 		public async Task GetTextMessage(Message message)
 		{
+			string text = message.Text;
+
+			if (Context.ContainsKey(message.Chat.Id))
+			{
+				string context = Context[message.Chat.Id];
+				Context[message.Chat.Id] = text;
+
+				if (context == "За жанром")
+				{
+					await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.SearchMenu);
+					return;
+				}
+				if (context == "За назвою")
+				{
+					FilmModel[] filmRequest = Films.Where(f => f.Name.Contains(text)).ToArray();
+					if(filmRequest.Length > 0)
+					{
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Length}.", replyMarkup: MarkupMenu.SearchMenu); ;
+						foreach (var film in filmRequest)
+						{
+							await ShowFilm(message.Chat.Id, film);
+						}
+					}
+					else
+					{
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Не вдалось знайти фільм по цій назві {text}.", replyMarkup: MarkupMenu.SearchMenu); ;
+					}
+					
+					return;
+				}
+			}
+			else
+			{
+				Context.Add(message.Chat.Id, text);
+			}
+
+			if (message.Text == "За жанром")
+			{
+				//await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.SearchMenu);
+				return;
+			}
+			if (message.Text == "За назвою")
+			{
+				await botClient.SendTextMessageAsync(message.Chat.Id, "Введіть назву фільма", replyMarkup: MarkupMenu.SearchMenu);
+				return;
+			}
+
 			if (message.Text == "Рандомний фільм")
 			{
 				var film = GetRandomFilm();
@@ -106,21 +155,15 @@ namespace TelegramBot
 			if (message.Text == "Знайти фільм")
 			{
 				await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть тип пошуку", replyMarkup: MarkupMenu.SearchMenu);
-
-				if (message.Text == "За жанром")
-				{
-
-				}
-				if (message.Text == "За назвою")
-				{
-
-				}
-				if (message.Text == "Назад у меню")
-				{
-					await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.MainMenu);
-				}
 				return;
 			}
+
+			if (message.Text == "Назад у меню")
+			{
+				await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.MainMenu);
+				return;
+			}
+
 			if (message.Text == "Статистика")
 			{
 				var path = GetStatisticViews();
