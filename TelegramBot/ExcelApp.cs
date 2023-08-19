@@ -56,16 +56,15 @@ namespace TelegramBot
 				{
 					Name = sheet.Cells[i + 1, "A"].Text,
 					Description = sheet.Cells[i + 1, "B"].Text,
-					Genre = GenreType.None,
+					Genre = sheet.Cells[i + 1, "C"].Text,
 					Rate = sheet.Cells[i + 1, "D"].Value2,
 					Views = sheet.Cells[i + 1, "E"].Value2,
 					Image = sheet.Cells[i + 1, "F"].Text,
 				};
-				if (Enum.TryParse<GenreType>(sheet.Cells[i + 1, "C"].Text, out GenreType type))
-                {
-                    films[i].Genre = type;
-                }
-		
+				//if (Enum.TryParse<GenreType>(sheet.Cells[i + 1, "C"].Text, out GenreType type))
+                //{
+                //  films[i].Genre = type;
+                //}
 			}
 			return films;
 		}

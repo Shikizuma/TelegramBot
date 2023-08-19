@@ -96,14 +96,10 @@ namespace TelegramBot
 
 				if (context == "За жанром")
 				{
-					//await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.SearchMenu);
-				}
-				if (context == "За назвою")
-				{
-					FilmModel[] filmRequest = Films.Where(f => f.Name.ToLower().Contains(message.Text.ToLower())).ToArray();
-					if(filmRequest.Length > 0)
+					FilmModel[] filmRequest = Films.Where(f => f.Genre.ToLower().Contains(message.Text.ToLower())).ToArray();
+					if (filmRequest.Length > 0)
 					{
-						await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Length}.", replyMarkup: MarkupMenu.SearchMenu); ;
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Length}."/*, replyMarkup: MarkupMenu.SearchMenu*/);
 						foreach (var film in filmRequest)
 						{
 							await ShowFilm(message.Chat.Id, film);
@@ -111,7 +107,24 @@ namespace TelegramBot
 					}
 					else
 					{
-						await botClient.SendTextMessageAsync(message.Chat.Id, $"Не вдалось знайти фільм по цій назві {message.Text}.", replyMarkup: MarkupMenu.SearchMenu); ;
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Не вдалось знайти фільм по цьому жанру {message.Text}."/*, replyMarkup: MarkupMenu.SearchMenu*/);
+					}
+					return;
+				}
+				if (context == "За назвою")
+				{
+					FilmModel[] filmRequest = Films.Where(f => f.Name.ToLower().Contains(message.Text.ToLower())).ToArray();
+					if(filmRequest.Length > 0)
+					{
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Length}."/*, replyMarkup: MarkupMenu.SearchMenu*/);
+						foreach (var film in filmRequest)
+						{
+							await ShowFilm(message.Chat.Id, film);
+						}
+					}
+					else
+					{
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Не вдалось знайти фільм по цій назві {message.Text}."/*, replyMarkup: MarkupMenu.SearchMenu*/);
 					}
 					
 					return;
