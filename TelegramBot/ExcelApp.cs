@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TelegramBot.Enums;
 using TelegramBot.Models;
 using Excel = Microsoft.Office.Interop.Excel.Application;
 
@@ -55,13 +56,29 @@ namespace TelegramBot
 				{
 					Name = sheet.Cells[i + 1, "A"].Text,
 					Description = sheet.Cells[i + 1, "B"].Text,
-					Genre = sheet.Cells[i + 1, "C"].Text,
+					Genre = GenreType.None,
 					Rate = sheet.Cells[i + 1, "D"].Value2,
 					Views = sheet.Cells[i + 1, "E"].Value2,
 					Image = sheet.Cells[i + 1, "F"].Text,
 				};
+				if (Enum.TryParse<GenreType>(sheet.Cells[i + 1, "C"].Text, out GenreType type))
+                {
+                    films[i].Genre = type;
+                }
+		
 			}
 			return films;
+		}
+
+        public void Exit()
+        {
+			if (book == null)
+            {
+                application.Quit();
+				return;
+			}
+            book.Close(1);
+            application.Quit();
 		}
 
         public string GetStatistics(FilmModel[] films)

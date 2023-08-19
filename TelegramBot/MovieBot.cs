@@ -41,6 +41,7 @@ namespace TelegramBot
 			botClient.StartReceiving(BotTakeMessage, BotTakeError, options, cancellation);
             Console.WriteLine("Бот почав роботу!");
             Console.ReadKey();
+			StatisticApp.Exit();
 		}
 
 		public void SetQuestions(QuestionModel[] questions)
@@ -87,21 +88,19 @@ namespace TelegramBot
 
 		public async Task GetTextMessage(Message message)
 		{
-			string text = message.Text;
 
 			if (Context.ContainsKey(message.Chat.Id))
 			{
 				string context = Context[message.Chat.Id];
-				Context[message.Chat.Id] = text;
+				Context[message.Chat.Id] = message.Text;
 
 				if (context == "За жанром")
 				{
-					await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.SearchMenu);
-					return;
+					//await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.SearchMenu);
 				}
 				if (context == "За назвою")
 				{
-					FilmModel[] filmRequest = Films.Where(f => f.Name.Contains(text)).ToArray();
+					FilmModel[] filmRequest = Films.Where(f => f.Name.ToLower().Contains(message.Text.ToLower())).ToArray();
 					if(filmRequest.Length > 0)
 					{
 						await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Length}.", replyMarkup: MarkupMenu.SearchMenu); ;
@@ -112,7 +111,7 @@ namespace TelegramBot
 					}
 					else
 					{
-						await botClient.SendTextMessageAsync(message.Chat.Id, $"Не вдалось знайти фільм по цій назві {text}.", replyMarkup: MarkupMenu.SearchMenu); ;
+						await botClient.SendTextMessageAsync(message.Chat.Id, $"Не вдалось знайти фільм по цій назві {message.Text}.", replyMarkup: MarkupMenu.SearchMenu); ;
 					}
 					
 					return;
@@ -120,12 +119,12 @@ namespace TelegramBot
 			}
 			else
 			{
-				Context.Add(message.Chat.Id, text);
+				Context.Add(message.Chat.Id, message.Text);
 			}
 
 			if (message.Text == "За жанром")
 			{
-				//await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.SearchMenu);
+				await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.GenreMenu);
 				return;
 			}
 			if (message.Text == "За назвою")

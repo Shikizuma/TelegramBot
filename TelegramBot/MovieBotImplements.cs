@@ -15,10 +15,10 @@ namespace TelegramBot
 	partial class MovieBot : IMovieBot
 	{
 		static Random random = new Random();
-		public FilmModel[] GetByTags(string search, SearchMode mode)
-		{
-			throw new NotImplementedException();
-		}
+		//public FilmModel[] GetByTags(string search, SearchMode mode)
+		//{
+		//	throw new NotImplementedException();
+		//}
 
 		public FilmModel GetRandomFilm()
 		{

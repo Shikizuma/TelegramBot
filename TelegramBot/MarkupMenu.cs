@@ -35,5 +35,21 @@ namespace TelegramBot
 			}
 		}
 
+		public static IReplyMarkup GenreMenu
+		{
+			get
+			{
+				KeyboardButton[][] buttons = new KeyboardButton[][]
+				{
+					new KeyboardButton[] {new KeyboardButton("Драма"), new KeyboardButton("Комедія"), new KeyboardButton("Екшн"), new KeyboardButton("Жахи") },
+					new KeyboardButton[] {new KeyboardButton("Фантастика"), new KeyboardButton("Фентезі"), new KeyboardButton("Містика"), new KeyboardButton("Анімація") },
+					new KeyboardButton[] {new KeyboardButton("Трилер"), new KeyboardButton("Романтика"), new KeyboardButton("Музичний"), new KeyboardButton("Спорт") },
+					new KeyboardButton[] {new KeyboardButton("Документальний фільм"), new KeyboardButton("Історична драма"), new KeyboardButton("Кримінальна драма") },
+					new KeyboardButton[] {new KeyboardButton("Назад у меню") },
+				};
+				return new ReplyKeyboardMarkup(buttons);
+			}
+		}
+
 	}
 }
