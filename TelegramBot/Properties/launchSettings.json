@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "TelegramBot": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "jsWebView2Debugging": false,
+      "sqlDebugging": false,
+      "remoteDebugEnabled": false,
+      "hotReloadEnabled": false
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}
