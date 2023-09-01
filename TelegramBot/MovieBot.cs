@@ -44,10 +44,6 @@ namespace TelegramBot
 			StatisticApp.Exit();
 		}
 
-		//public void SetQuestions(QuestionModel[] questions)
-		//{
-		//}
-
 		async Task BotTakeMessage(ITelegramBotClient botClient, Update update, CancellationToken token)
 		{
 			if (update.Type == UpdateType.Message)

@@ -15,16 +15,14 @@ namespace TelegramBot
 		{
 			get
 			{
-				KeyboardButton[][] buttons = MenuFabric.CreateKeys(MenuType.MainMenu);
-				return new ReplyKeyboardMarkup(buttons);
+				return new ReplyKeyboardMarkup(MenuFabric.CreateKeys(MenuType.MainMenu));
 			}
 		}
 		public static IReplyMarkup SearchMenu 
 		{
 			get
 			{
-				KeyboardButton[][] buttons = MenuFabric.CreateKeys(MenuType.SearchMenu);
-				return new ReplyKeyboardMarkup(buttons);
+				return new ReplyKeyboardMarkup(MenuFabric.CreateKeys(MenuType.SearchMenu));
 			}
 		}
 
@@ -32,8 +30,7 @@ namespace TelegramBot
 		{
 			get
 			{
-				KeyboardButton[][] buttons = MenuFabric.CreateKeys(MenuType.GenreMenu);
-				return new ReplyKeyboardMarkup(buttons);
+				return new ReplyKeyboardMarkup(MenuFabric.CreateKeys(MenuType.GenreMenu));
 			}
 		}
 
