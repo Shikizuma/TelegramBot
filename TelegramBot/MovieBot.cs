@@ -21,7 +21,6 @@ namespace TelegramBot
 		public QuestionModel[] Questions { private get; set; }
 		public FilmModel[] Films { private get; set; }
 		Dictionary<long, string> Context { get; set; }
-		public ExcelApp StatisticApp { private get; set; }
         public MovieBot(string token)
         {
 			botClient = new TelegramBotClient(token);	
@@ -41,7 +40,7 @@ namespace TelegramBot
 			botClient.StartReceiving(BotTakeMessage, BotTakeError, options, cancellation);
             Console.WriteLine("Бот почав роботу!");
             Console.ReadKey();
-			StatisticApp.Exit();
+
 		}
 
 		async Task BotTakeMessage(ITelegramBotClient botClient, Update update, CancellationToken token)
@@ -184,6 +183,7 @@ namespace TelegramBot
 				string errorMessage = (context == "За жанром") ?
 					$"Не вдалось знайти фільм по цьому жанру {searchTerm}." :
 					$"Не вдалось знайти фільм по цій назві {searchTerm}.";
+
 				await botClient.SendTextMessageAsync(message.Chat.Id, errorMessage, replyMarkup: MarkupMenu.MainMenu);
 			}
 		}

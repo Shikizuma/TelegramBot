@@ -13,14 +13,12 @@ namespace TelegramBot
 		static void Main(string[] args)
 		{
 			string excelFile = Path.Combine(Environment.CurrentDirectory, "base.xlsx");
-			ExcelApp app = new ExcelApp(excelFile);
-			var questions = app.GetQuestions();
-			var films = app.GetFilms();
+			//var questions = app.GetQuestions();
+			//var films = app.GetFilms();
 
             MovieBot bot = new MovieBot(Token);
-			bot.Questions = questions;
-			bot.Films = films;
-			bot.StatisticApp = app;
+			//bot.Questions = questions;
+			//bot.Films = films;
 			bot.Start();
         }
 

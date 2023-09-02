@@ -14,7 +14,6 @@ namespace TelegramBot.Interface
 		FilmModel GetRandomFilm();
 		FilmModel[] GetTopFilms(int count);
 		//FilmModel[] GetByTags(string search, SearchMode mode);
-		string GetStatisticViews();
 		string GetResponce(string question);
 	}
 }

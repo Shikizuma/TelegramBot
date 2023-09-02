@@ -11,7 +11,8 @@ namespace TelegramBot.Models
 	{
 
         public string Name { get; set; }
-		public string Description { get; set; }
+		public int ReleaseYear { get; set; }
+        public string Description { get; set; }
 		public string Genre { get; set; }
 		public double Rate { get; set; }
 		public double Views { get; set; }

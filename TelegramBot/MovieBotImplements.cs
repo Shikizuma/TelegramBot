@@ -15,11 +15,7 @@ namespace TelegramBot
 	partial class MovieBot : IMovieBot
 	{
 		static Random random = new Random();
-		//public FilmModel[] GetByTags(string search, SearchMode mode)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
+		
 		public FilmModel GetRandomFilm()
 		{
 			int randomFilm = random.Next(0, Films.Length);
@@ -37,11 +33,6 @@ namespace TelegramBot
 			{
 				return $"Я не зрозумів, вашої команди: \"{text}\", не існує.";
 			}
-		}
-
-		public string GetStatisticViews()
-		{
-			return StatisticApp.GetStatistics(Films);
 		}
 
 		public FilmModel[] GetTopFilms(int count)
