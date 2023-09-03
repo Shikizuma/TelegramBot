@@ -18,7 +18,7 @@ namespace TelegramBot
 		
 		public FilmModel GetRandomFilm()
 		{
-			int randomFilm = random.Next(0, Films.Length);
+			int randomFilm = random.Next(0, Films.Count);
 			return Films[randomFilm];
 		}
 

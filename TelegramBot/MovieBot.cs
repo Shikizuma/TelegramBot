@@ -19,7 +19,7 @@ namespace TelegramBot
 	{
 		TelegramBotClient botClient;
 		public QuestionModel[] Questions { private get; set; }
-		public FilmModel[] Films { private get; set; }
+		public List<FilmModel> Films { private get; set; }
 		Dictionary<long, string> Context { get; set; }
         public MovieBot(string token)
         {
@@ -139,40 +139,39 @@ namespace TelegramBot
 				return;
 			}
 
-			if (message.Text == "Статистика")
-			{
-				var path = GetStatisticViews();
-				using (FileStream fs = new FileStream(path, FileMode.Open))
-				{
-					var file = new InputOnlineFile(fs, "statistic.png");
-					await botClient.SendPhotoAsync(message.Chat.Id, file, caption: "Статистика", replyMarkup: MarkupMenu.MainMenu);
-				}
-				return;
-			}
+			//if (message.Text == "Статистика")
+			//{
+			//	var path = GetStatisticViews();
+			//	using (FileStream fs = new FileStream(path, FileMode.Open))
+			//	{
+			//		var file = new InputOnlineFile(fs, "statistic.png");
+			//		await botClient.SendPhotoAsync(message.Chat.Id, file, caption: "Статистика", replyMarkup: MarkupMenu.MainMenu);
+			//	}
+			//	return;
+			//}
 
 			string responce = GetResponce(message.Text);
 			await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
 			//await Console.Out.WriteLineAsync(message.Chat.FirstName + ": " + message.Text);
 		}
 
-
 		private async Task HandleFilmRequest(Message message, string context)
 		{
 			string searchTerm = message.Text.ToLower();
-			FilmModel[] filmRequest = null;
+			List<FilmModel> filmRequest = null;
 
 			if (context == "За жанром")
-			{
-				filmRequest = Films.Where(f => f.Genre.ToLower().Contains(searchTerm)).ToArray();
+			{		
+				filmRequest = Films.Where(f => f.Genre.Any(g => g.ToLower().Contains(searchTerm))).ToList();
 			}
 			else if (context == "За назвою")
 			{
-				filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm)).ToArray();
+				filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm)).ToList();
 			}
 
-			if (filmRequest != null && filmRequest.Length > 0)
+			if (filmRequest != null && filmRequest.Count > 0)
 			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Length}.");
+				await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Count}.");
 				foreach (var film in filmRequest)
 				{
 					await ShowFilm(message.Chat.Id, film);
