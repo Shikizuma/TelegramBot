@@ -12,7 +12,7 @@ using Telegram.Bot.Types.InputFiles;
 
 namespace TelegramBot
 {
-	partial class MovieBot : IMovieBot
+	partial class MovieBot /* : IMovieBot*/
 	{
 		static Random random = new Random();
 		
@@ -35,9 +35,9 @@ namespace TelegramBot
 			}
 		}
 
-		public FilmModel[] GetTopFilms(int count)
+		public List<FilmModel> GetTopFilms(int count)
 		{
-			return Films.OrderByDescending(f => f.Rate).Take(count).ToArray();
+			return Films.OrderByDescending(f => f.Rate).Take(count).ToList();
 		}
 	}
 }

@@ -20,5 +20,6 @@ namespace TelegramBot.Models
 		public double Rate { get; set; }
 		public double Views { get; set; }
 		public string Image { get; set; }
+		public string MovieUrl { get; set; }
 	}
 }
