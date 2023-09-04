@@ -18,7 +18,7 @@ namespace TelegramBot.Models
 		public string[] Genre { get; set; }
 		public string Type { get; set; }
 		public double Rate { get; set; }
-		public double Views { get; set; }
+		public int Views { get; set; }
 		public string Image { get; set; }
 		public string MovieUrl { get; set; }
 	}
