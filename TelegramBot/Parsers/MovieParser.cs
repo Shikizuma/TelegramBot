@@ -7,18 +7,16 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using TelegramBot.Models;
+using System.Globalization;
 
 namespace TelegramBot.Parsers
 {
     internal class MovieParser
     {
-        private const string URL = "https://uakino.club/page/1/";
+        private const string URL = "https://uakino.club/filmy/page/1/";
 
         public List<FilmModel> ParseMovies()
         {
-
-            const string URL = "https://uakino.club/page/2/";
-
             var web = new HtmlWeb();
             var doc = web.Load(URL);
             List<FilmModel> movies = new List<FilmModel>();
@@ -30,57 +28,148 @@ namespace TelegramBot.Parsers
                 foreach (HtmlNode movieItem in movieItems)
                 {
                     FilmModel movie = new FilmModel();
-                    HtmlNode movieNodes = movieItem.SelectSingleNode(".//a[@class='movie-title']");
+                    HtmlNode movieNode = movieItem.SelectSingleNode(".//a[@class='movie-title']");
 
-
-
-                    if (movieNodes != null)
+                    // Опис фільму
+                    HtmlNode descriptionNode = movieItem.SelectSingleNode("//span[@class='desc-about-text']");
+                    if (descriptionNode != null)
                     {
-                        movie.Name = movieNodes.InnerText;
-                        movie.MovieUrl = movieNodes.GetAttributeValue("href", "");
+                        movie.Description = descriptionNode.InnerText.Trim();
+                    }
 
+                    if (movieNode != null)
+                    {
+                        // Назва Фільму
+                        movie.Name = movieNode.InnerText.Trim();
+
+                        // Ланка на фільм
+                        movie.MovieUrl = movieNode.GetAttributeValue("href", "");
 
                         if (!string.IsNullOrWhiteSpace(movie.MovieUrl))
                         {
                             var webInfo = new HtmlWeb();
                             var filmInfoDoc = webInfo.Load(movie.MovieUrl);
 
+                            // Зображення 
+                            HtmlNode linkNode = filmInfoDoc.DocumentNode.SelectSingleNode("//a[@data-fancybox='gallery']");
+                            if (linkNode != null)
+                            {
+                                const string BASEURL = "https://uakino.club";
+                                string relativeUrl = linkNode.GetAttributeValue("href", "");
+                                movie.Image = BASEURL + relativeUrl;
+                            }
 
+                            // Детальна інформація
                             HtmlNodeCollection infoNodes = filmInfoDoc.DocumentNode.SelectNodes("//div[contains(@class, 'fi-item')]");
-
                             foreach (HtmlNode infoNode in infoNodes)
                             {
-                                // Запарсувати страну
-                                HtmlNode countryNode = filmInfoDoc.DocumentNode.SelectSingleNode("//div[@class='fi-desc']/a");
-                                string country = countryNode.InnerText;
+                                var labelNode = infoNode.SelectSingleNode(".//div[@class='fi-label']/h2");
 
-                                // Запарсувати жанр
-                                var genreNode = filmInfoDoc.DocumentNode.SelectSingleNode("//div[@class='fi-item-s clearfix'][1]/div[@class='fi-desc']");
-                                string genre = genreNode.InnerText.Trim();
-
-                                // Запарсувати режисера
-                                var directorNode = filmInfoDoc.DocumentNode.SelectSingleNode("//div[@class='fi-item-s clearfix'][2]/div[@class='fi-desc']");
-                                string director = directorNode.InnerText.Trim();
-
-                                // Запарсувати акторів
-                                var actorsNode = filmInfoDoc.DocumentNode.SelectSingleNode("//div[@class='fi-item-s clearfix'][3]/div[@class='fi-desc']");
-                                string actors = actorsNode.InnerText.Trim();
-
-                                // Запарсувати рейтинг
-                                var ratingNode = filmInfoDoc.DocumentNode.SelectSingleNode("//div[@class='fi-item-s clearfix'][4]/div[@class='fi-desc']");
-                                string rating = ratingNode.InnerText.Trim();
-                                // Extract the IMDb rating
-
-                                HtmlNode imdbRatingNode = filmInfoDoc.DocumentNode.SelectSingleNode("//div[@class='fi-item-s']/div[@class='fi-label']/img[@alt='Лікарка Ча imdb рейтинг']/../following-sibling::div[@class='fi-desc']");
-                                string imdbRating = imdbRatingNode?.InnerText.Trim();
-
-                                if (!string.IsNullOrEmpty(imdbRating))
+                                // Рік випуску
+                                if (labelNode != null && labelNode.InnerText.Trim() == "Рік виходу:")
                                 {
-                                    string[] parts = imdbRating.Split('/');
-                                    if (parts.Length >= 2)
+                                    HtmlNode releaseNode = infoNode.SelectSingleNode(".//div[@class='fi-desc']/a");
+                                    if (releaseNode != null && int.TryParse(releaseNode.InnerText.Trim(), out int release))
                                     {
-                                        movie.Rate = double.Parse(parts[0].Trim());
-                                        movie.Views = int.Parse(parts[1].Trim());
+                                        movie.ReleaseYear = release;
+                                        continue;
+                                    }
+                                }
+
+                                // Країна
+                                if (labelNode != null && labelNode.InnerText.Trim() == "Країна:")
+                                {
+                                    HtmlNodeCollection countryNodes = infoNode.SelectNodes(".//div[@class='fi-desc']/a");
+                                    if (countryNodes != null)
+                                    {
+                                        foreach (HtmlNode countryNode in countryNodes)
+                                        {
+                                            string country = countryNode.InnerText.Trim();
+                                            movie.Countries.Add(country);
+                                        }
+                                        continue;
+                                    }
+                                }
+
+                                // Жанр
+                                if (labelNode != null && labelNode.InnerText.Trim() == "Жанр:")
+                                {
+                                    HtmlNodeCollection genreNodes = infoNode.SelectNodes(".//div[@class='fi-desc']/a");
+                                    if (genreNodes != null)
+                                    {
+                                        foreach (HtmlNode genreNode in genreNodes)
+                                        {
+                                            string genre = genreNode.InnerText.Trim();
+                                            movie.Genres.Add(genre);
+
+                                        }
+                                        continue;
+                                    }
+                                }
+
+                                // Режисер
+                                if (labelNode != null && labelNode.InnerText.Trim() == "Режисер:")
+                                {
+                                    HtmlNodeCollection producerNodes = infoNode.SelectNodes(".//div[@class='fi-desc']/a");
+                                    if (producerNodes != null)
+                                    {
+                                        foreach (HtmlNode producerNode in producerNodes)
+                                        {
+                                            string producerUrl = producerNode.GetAttributeValue("href", "");
+                                            string producer = producerNode.InnerText.Trim();
+                                            movie.Director.Add(producerUrl, producer);
+                                        }
+                                        continue;
+                                    }
+                                }
+
+                                // Актори
+                                if (labelNode != null && labelNode.InnerText.Trim() == "Актори:")
+                                {
+                                    HtmlNodeCollection actorsNodes = infoNode.SelectNodes(".//div[@class='fi-desc']/a");
+                                    if (actorsNodes != null)
+                                    {
+                                        foreach (HtmlNode actorNode in actorsNodes)
+                                        {
+                                            string actorUrl = actorNode.GetAttributeValue("href", "");
+                                            string actor = actorNode.InnerText.Trim();
+                                            movie.Actors.Add(actorUrl, actor);
+                                        }
+                                        continue;
+                                    }
+                                }
+
+                                // Тривалість
+                                if (labelNode != null && labelNode.InnerText.Trim() == "Тривалість:")
+                                {
+                                    HtmlNode durationNode = infoNode.SelectSingleNode(".//div[@class='fi-desc']");
+                                    if (durationNode != null)
+                                    {
+                                        movie.Duration = durationNode.InnerText.Trim();
+                                    }
+                                    continue;
+                                }
+
+                                // Рейтинг
+                                var imgNode = infoNode.SelectSingleNode(".//div[@class='fi-label']/img[contains(@alt, 'imdb рейтинг')]");
+                                if (imgNode != null)
+                                {
+                                    HtmlNode ratingNode = infoNode.SelectSingleNode(".//div[@class='fi-desc']");
+                                    if (ratingNode != null)
+                                    {
+                                        string ratingText = ratingNode.InnerText.Trim();
+
+                                        string[] ratingParts = ratingText.Split('/');
+                                        if (ratingParts.Length == 2)
+                                        {
+                                            string imdbRating = ratingParts[0].Trim();
+                                            string numberOfVotes = ratingParts[1].Trim();
+
+
+                                            CultureInfo culture = CultureInfo.InvariantCulture;
+                                            movie.Rate = double.Parse(imdbRating, culture);
+                                            movie.Views = int.Parse(numberOfVotes);
+                                        }
                                     }
                                 }
                             }
@@ -92,10 +181,9 @@ namespace TelegramBot.Parsers
 
                 }
             }
-
-
-           
+            return movies;
         }
+        
 
     }
     
