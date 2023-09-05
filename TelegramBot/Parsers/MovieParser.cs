@@ -32,15 +32,19 @@ namespace TelegramBot.Parsers
                     FilmModel movie = new FilmModel();
                     HtmlNode movieNodes = movieItem.SelectSingleNode(".//a[@class='movie-title']");
 
+
+
                     if (movieNodes != null)
                     {
                         movie.Name = movieNodes.InnerText;
                         movie.MovieUrl = movieNodes.GetAttributeValue("href", "");
 
+
                         if (!string.IsNullOrWhiteSpace(movie.MovieUrl))
                         {
                             var webInfo = new HtmlWeb();
                             var filmInfoDoc = webInfo.Load(movie.MovieUrl);
+
 
                             HtmlNodeCollection infoNodes = filmInfoDoc.DocumentNode.SelectNodes("//div[contains(@class, 'fi-item')]");
 
