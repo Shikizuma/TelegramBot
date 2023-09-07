@@ -37,10 +37,10 @@ namespace TelegramBot
 				AllowedUpdates = { },
 			};
 
+			
 			botClient.StartReceiving(BotTakeMessage, BotTakeError, options, cancellation);
             Console.WriteLine("Бот почав роботу!");
             Console.ReadKey();
-
 		}
 
 		async Task BotTakeMessage(ITelegramBotClient botClient, Update update, CancellationToken token)

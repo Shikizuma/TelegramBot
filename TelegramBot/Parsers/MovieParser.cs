@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using TelegramBot.Models;
 using System.Globalization;
+using Newtonsoft.Json;
 
 namespace TelegramBot.Parsers
 {
@@ -15,7 +16,17 @@ namespace TelegramBot.Parsers
     {
         private const string BaseUrl = "https://uakino.club/filmy/page/1/";
 
-        public List<FilmModel> ParseMovies()
+
+        public void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
+        {
+            using (StreamWriter writer = new StreamWriter(jsonFilePath))
+            {
+                string json = JsonConvert.SerializeObject(movies, Formatting.Indented);
+                writer.Write(json);
+            }
+        }
+
+        public void ParseMovies()
         {
             var web = new HtmlWeb();
             var doc = web.Load(BaseUrl);
@@ -35,7 +46,7 @@ namespace TelegramBot.Parsers
                 }
             }
 
-            return movies;
+            SaveMoviesToJson(movies, "movies.json");
         }
 
         private FilmModel ParseMovie(HtmlNode movieItem)
@@ -43,7 +54,7 @@ namespace TelegramBot.Parsers
             var movie = new FilmModel();
             var movieNode = movieItem.SelectSingleNode(".//a[@class='movie-title']");
 
-            HtmlNode descriptionNode = movieItem.SelectSingleNode("//span[@class='desc-about-text']");
+            HtmlNode descriptionNode = movieItem.SelectSingleNode(".//span[@class='desc-about-text']");
             if (descriptionNode != null)
             {
                 movie.Description = descriptionNode.InnerText.Trim();
@@ -84,10 +95,12 @@ namespace TelegramBot.Parsers
                     var labelNode = infoNode.SelectSingleNode(".//div[@class='fi-label']/h2");
                     var descNode = infoNode.SelectSingleNode(".//div[@class='fi-desc']");
 
-                    if (labelNode != null && descNode != null)
+                    if (descNode != null)
                     {
-                        var labelText = labelNode.InnerText.Trim();
-                        var descText = descNode.InnerText.Trim();
+                        string labelText = "";
+                        if (labelNode != null)
+                            labelText = labelNode.InnerText.Trim();
+                        string descText = descNode.InnerText.Trim();
 
                         switch (labelText)
                         {
