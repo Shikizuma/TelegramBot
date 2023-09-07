@@ -16,8 +16,7 @@ namespace TelegramBot.Parsers
     {
         private const string BaseUrl = "https://uakino.club/filmy/page/1/";
 
-
-        public void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
+        private void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
         {
             using (StreamWriter writer = new StreamWriter(jsonFilePath))
             {

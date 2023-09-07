@@ -12,6 +12,7 @@ using TelegramBot.Models;
 using TelegramBot.Interface;
 using System.IO;
 using Telegram.Bot.Types.InputFiles;
+using TelegramBot.Parsers;
 
 namespace TelegramBot
 {
@@ -32,6 +33,9 @@ namespace TelegramBot
 			CancellationTokenSource source = new CancellationTokenSource();
 			CancellationToken cancellation = source.Token;
 
+			MovieParser movieParser = new MovieParser();
+			movieParser.ParseMovies();
+
 			ReceiverOptions options = new ReceiverOptions()
 			{
 				AllowedUpdates = { },
@@ -39,6 +43,7 @@ namespace TelegramBot
 
 			
 			botClient.StartReceiving(BotTakeMessage, BotTakeError, options, cancellation);
+
             Console.WriteLine("Бот почав роботу!");
             Console.ReadKey();
 		}
