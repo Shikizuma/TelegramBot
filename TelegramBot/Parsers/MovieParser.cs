@@ -111,40 +111,15 @@ namespace TelegramBot.Parsers
                                 break;
 
                             case "Країна:":
-                                var countryNodes = descNode.SelectNodes(".//a");
-                                if (countryNodes != null)
-                                {
-                                    foreach (var countryNode in countryNodes)
-                                    {
-                                        var country = countryNode.InnerText.Trim();
-                                        movie.Countries.Add(country);
-                                    }
-                                }
+                                ParseNodesAndAddToCollection(descNode, movie.Countries);
                                 break;
 
                             case "Жанр:":
-                                var genreNodes = descNode.SelectNodes(".//a");
-                                if (genreNodes != null)
-                                {
-                                    foreach (var genreNode in genreNodes)
-                                    {
-                                        var genre = genreNode.InnerText.Trim();
-                                        movie.Genres.Add(genre);
-                                    }
-                                }
+                                ParseNodesAndAddToCollection(descNode, movie.Genres);             
                                 break;
 
                             case "Режисер:":
-                                var producerNodes = descNode.SelectNodes(".//a");
-                                if (producerNodes != null)
-                                {
-                                    foreach (var producerNode in producerNodes)
-                                    {
-                                        var producerUrl = producerNode.GetAttributeValue("href", "");
-                                        var producer = producerNode.InnerText.Trim();
-                                        movie.Director.Add(producerUrl, producer);
-                                    }
-                                }
+                                ParseNodesAndAddToCollection(descNode, movie.Director);
                                 break;
 
                             case "Актори:":
@@ -188,6 +163,33 @@ namespace TelegramBot.Parsers
                                 break;
                         }
                     }
+                }
+            }
+        }
+
+        private void ParseNodesAndAddToCollection(HtmlNode descNode, List<string> collection)
+        {
+            var nodes = descNode.SelectNodes(".//a");
+            if (nodes != null)
+            {
+                foreach (var node in nodes)
+                {
+                    var value = node.InnerText.Trim();
+                    collection.Add(value);
+                }
+            }
+        }
+
+        private void ParseNodesAndAddToCollection(HtmlNode descNode, Dictionary<string, string> collection)
+        {
+            var nodes = descNode.SelectNodes(".//a");
+            if (nodes != null)
+            {
+                foreach (var node in nodes)
+                {
+                    var url = node.GetAttributeValue("href", "");
+                    var value = node.InnerText.Trim();
+                    collection.Add(url, value);
                 }
             }
         }
