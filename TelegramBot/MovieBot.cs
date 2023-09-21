@@ -167,7 +167,7 @@ namespace TelegramBot
 
 			if (context == "За жанром")
 			{		
-				filmRequest = Films.Where(f => f.Genre.Any(g => g.ToLower().Contains(searchTerm))).ToList();
+				//filmRequest = Films.Where(f => f.Genre.Any(g => g.ToLower().Contains(searchTerm))).ToList();
 			}
 			else if (context == "За назвою")
 			{

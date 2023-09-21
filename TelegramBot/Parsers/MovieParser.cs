@@ -123,16 +123,7 @@ namespace TelegramBot.Parsers
                                 break;
 
                             case "Актори:":
-                                var actorsNodes = descNode.SelectNodes(".//a");
-                                if (actorsNodes != null)
-                                {
-                                    foreach (var actorNode in actorsNodes)
-                                    {
-                                        var actorUrl = actorNode.GetAttributeValue("href", "");
-                                        var actor = actorNode.InnerText.Trim();
-                                        movie.Actors.Add(actorUrl, actor);
-                                    }
-                                }
+                                ParseNodesAndAddToCollection(descNode, movie.Actors);
                                 break;
 
                             case "Тривалість:":
@@ -156,7 +147,7 @@ namespace TelegramBot.Parsers
 
                                             CultureInfo culture = CultureInfo.InvariantCulture;
                                             movie.Rate = double.Parse(imdbRating, culture);
-                                            movie.Views = int.Parse(numberOfVotes);
+                                            movie.Views = int.Parse(numberOfVotes.Replace(" ", ""));
                                         }
                                     }
                                 }

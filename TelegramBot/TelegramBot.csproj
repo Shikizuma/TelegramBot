@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="bin\Debug\net6.0\config.json" />
     <Content Include="bin\Debug\net6.0\configInlineMenu.json" />
+    <Content Include="bin\Debug\net6.0\configMenu.json" />
   </ItemGroup>
 
   <ItemGroup>
