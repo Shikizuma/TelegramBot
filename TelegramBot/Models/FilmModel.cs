@@ -13,7 +13,7 @@ namespace TelegramBot.Models
         public int ReleaseYear { get; set; }
         public string Description { get; set; }
         public List<string> Countries { get; set; }
-        public Dictionary<string, string> Director { get; set; }
+        public Dictionary<string, string> Directors { get; set; }
         public Dictionary<string, string> Actors { get; set; }
         public List<string> Genres { get; set; }
         public string Duration { get; set; }
@@ -25,9 +25,26 @@ namespace TelegramBot.Models
         public FilmModel()
         {
             Countries = new List<string>();
-            Director = new Dictionary<string, string>();
+            Directors = new Dictionary<string, string>();
             Actors = new Dictionary<string, string>();
             Genres = new List<string>();
+        }
+
+        public override string ToString()
+        {
+            string genresString = string.Join(", ", Genres);
+            string countriesString = string.Join(", ", Countries);
+            string directorString = string.Join(", ", Directors.Values);
+            string actorsString = string.Join(", ", Actors.Values);
+            return $"Назва: {Name}\n" +
+                $"Жанр: {genresString}\n" +
+                $"Тривалість: {Duration}\n" +
+                $"Опис: {Description}\n" +
+                $"Країна: {countriesString}\n" +
+                $"Режисер: {directorString}\n" +
+                $"Актори: {actorsString}\n" +
+                $"Переглядів: {Views}\n" +
+                $"Рейтинг: {Rate} / 10\n";
         }
     }
 }

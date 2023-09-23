@@ -12,11 +12,11 @@ using Newtonsoft.Json;
 
 namespace TelegramBot.Parsers
 {
-    internal class MovieParser
+    internal static class MovieParser
     {
         private const string BaseUrl = "https://uakino.club/filmy/page/1/";
 
-        private void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
+        private static void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
         {
             using (StreamWriter writer = new StreamWriter(jsonFilePath))
             {
@@ -25,7 +25,7 @@ namespace TelegramBot.Parsers
             }
         }
 
-        public void ParseMovies()
+        public static List<FilmModel> ParseMovies()
         {
             var web = new HtmlWeb();
             var doc = web.Load(BaseUrl);
@@ -46,9 +46,11 @@ namespace TelegramBot.Parsers
             }
 
             SaveMoviesToJson(movies, "movies.json");
+
+            return movies;
         }
 
-        private FilmModel ParseMovie(HtmlNode movieItem)
+        private static FilmModel ParseMovie(HtmlNode movieItem)
         {
             var movie = new FilmModel();
             var movieNode = movieItem.SelectSingleNode(".//a[@class='movie-title']");
@@ -76,14 +78,15 @@ namespace TelegramBot.Parsers
             return movie;
         }
 
-        private void ParseFilmInfo(FilmModel movie, HtmlDocument filmInfoDoc)
+        private static void ParseFilmInfo(FilmModel movie, HtmlDocument filmInfoDoc)
         {
             var linkNode = filmInfoDoc.DocumentNode.SelectSingleNode("//a[@data-fancybox='gallery']");
             if (linkNode != null)
             {
                 const string BaseUrl = "https://uakino.club";
                 var relativeUrl = linkNode.GetAttributeValue("href", "");
-                movie.Image = BaseUrl + relativeUrl;
+                if(!relativeUrl.Contains(BaseUrl))
+                    movie.Image = BaseUrl + relativeUrl;
             }
 
             var infoNodes = filmInfoDoc.DocumentNode.SelectNodes("//div[contains(@class, 'fi-item')]");
@@ -119,7 +122,7 @@ namespace TelegramBot.Parsers
                                 break;
 
                             case "Режисер:":
-                                ParseNodesAndAddToCollection(descNode, movie.Director);
+                                ParseNodesAndAddToCollection(descNode, movie.Directors);
                                 break;
 
                             case "Актори:":
@@ -144,7 +147,6 @@ namespace TelegramBot.Parsers
                                             string imdbRating = ratingParts[0].Trim();
                                             string numberOfVotes = ratingParts[1].Trim();
 
-
                                             CultureInfo culture = CultureInfo.InvariantCulture;
                                             movie.Rate = double.Parse(imdbRating, culture);
                                             movie.Views = int.Parse(numberOfVotes.Replace(" ", ""));
@@ -158,7 +160,7 @@ namespace TelegramBot.Parsers
             }
         }
 
-        private void ParseNodesAndAddToCollection(HtmlNode descNode, List<string> collection)
+        private static void ParseNodesAndAddToCollection(HtmlNode descNode, List<string> collection)
         {
             var nodes = descNode.SelectNodes(".//a");
             if (nodes != null)
@@ -171,7 +173,7 @@ namespace TelegramBot.Parsers
             }
         }
 
-        private void ParseNodesAndAddToCollection(HtmlNode descNode, Dictionary<string, string> collection)
+        private static void ParseNodesAndAddToCollection(HtmlNode descNode, Dictionary<string, string> collection)
         {
             var nodes = descNode.SelectNodes(".//a");
             if (nodes != null)

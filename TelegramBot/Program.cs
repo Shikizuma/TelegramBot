@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramBot.Parsers;
 
 namespace TelegramBot
 {
@@ -14,11 +15,11 @@ namespace TelegramBot
 		{
 			string excelFile = Path.Combine(Environment.CurrentDirectory, "base.xlsx");
 			//var questions = app.GetQuestions();
-			//var films = app.GetFilms();
+			var films = MovieParser.ParseMovies();
 
             MovieBot bot = new MovieBot(Token);
 			//bot.Questions = questions;
-			//bot.Films = films;
+			bot.Films = films;
 			bot.Start();
         }
 
