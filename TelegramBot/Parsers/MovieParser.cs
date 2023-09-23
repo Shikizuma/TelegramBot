@@ -80,13 +80,25 @@ namespace TelegramBot.Parsers
 
         private static void ParseFilmInfo(FilmModel movie, HtmlDocument filmInfoDoc)
         {
-            var linkNode = filmInfoDoc.DocumentNode.SelectSingleNode("//a[@data-fancybox='gallery']");
-            if (linkNode != null)
+            //var linkNode = filmInfoDoc.DocumentNode.SelectSingleNode("//a[@data-fancybox='gallery']");
+            //if (linkNode != null)
+            //{
+            //    const string BaseUrl = "https://uakino.club";
+            //    var relativeUrl = linkNode.GetAttributeValue("href", "");
+            //    if(!relativeUrl.Contains(BaseUrl))
+            //        movie.Image = BaseUrl + relativeUrl;
+            //}
+
+            var imgElement = filmInfoDoc.DocumentNode.SelectSingleNode(".//div[@class='film-poster']//a");
+
+            if (imgElement != null)
             {
                 const string BaseUrl = "https://uakino.club";
-                var relativeUrl = linkNode.GetAttributeValue("href", "");
-                if(!relativeUrl.Contains(BaseUrl))
+                var relativeUrl = imgElement.GetAttributeValue("href", "");
+                if (!relativeUrl.Contains(BaseUrl))
                     movie.Image = BaseUrl + relativeUrl;
+                else 
+                    movie.Image =  relativeUrl;
             }
 
             var infoNodes = filmInfoDoc.DocumentNode.SelectNodes("//div[contains(@class, 'fi-item')]");
