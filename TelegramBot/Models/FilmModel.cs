@@ -36,15 +36,16 @@ namespace TelegramBot.Models
             string countriesString = string.Join(", ", Countries);
             string directorString = string.Join(", ", Directors.Values);
             string actorsString = string.Join(", ", Actors.Values);
-            return $"Назва: {Name}\n" +
-                $"Жанр: {genresString}\n" +
-                $"Тривалість: {Duration}\n" +
-                $"Опис: {Description}\n" +
-                $"Країна: {countriesString}\n" +
-                $"Режисер: {directorString}\n" +
-                $"Актори: {actorsString}\n" +
-                $"Переглядів: {Views}\n" +
-                $"Рейтинг: {Rate} / 10\n";
+            return $"🎬 Назва: {Name}\n" +
+                 $"🎭 Жанр: {genresString}\n" +
+                 $"⏳ Тривалість: {Duration}\n" +
+                 $"💬 Опис: {Description}\n" +
+                 $"🌍 Країна: {countriesString}\n" +
+                 $"📽 Режисер: {directorString}\n" +
+                 $"👥 Актори: {actorsString}\n" +
+                 $"👀 Переглядів: {Views}\n" +
+                 $"⭐ Рейтинг: {Rate} / 10\n";
+
         }
     }
 }
