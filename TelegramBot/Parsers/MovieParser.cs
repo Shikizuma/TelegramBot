@@ -9,6 +9,8 @@ using HtmlAgilityPack;
 using TelegramBot.Models;
 using System.Globalization;
 using Newtonsoft.Json;
+using Telegram.Bot.Requests;
+using System.Net.Http.Json;
 
 namespace TelegramBot.Parsers
 {
@@ -36,6 +38,9 @@ namespace TelegramBot.Parsers
                     existingMovies.Add(movie);
                 }
             }
+
+            GetGenresToJson(existingMovies);
+
             using (StreamWriter writer = new StreamWriter(jsonFilePath))
             {
                 string json = JsonConvert.SerializeObject(existingMovies, Formatting.Indented);
@@ -225,5 +230,49 @@ namespace TelegramBot.Parsers
                 }
             }
         }
+
+        private static void GetGenresToJson(List<FilmModel> movies)
+        {
+            string jsonFilePath = "configMenu.json";
+            Dictionary<string, string[][]> menuData = new();
+
+            using (StreamReader reader = new StreamReader(jsonFilePath))
+            {
+                string jsonContent = reader.ReadToEnd();
+                menuData = JsonConvert.DeserializeObject<Dictionary<string, string[][]>>(jsonContent);
+            }
+
+
+            List<string> genres = movies
+                .SelectMany(movie => movie.Genres)
+                .Distinct()
+                .ToList();
+
+            List<string[]> genresArrays = new List<string[]>();
+            while (genres.Count > 0)
+            {
+                int chunkSize = Math.Min(4, genres.Count);
+                string[] genreArray = new string[chunkSize];
+                for (int j = 0; j < chunkSize; j++)
+                {
+                    genreArray[j] = genres[0];
+                    genres.RemoveAt(0);
+                }
+                genresArrays.Add(genreArray);
+            }
+
+            genresArrays.Add(new string[] { "Назад у меню" });
+
+            menuData["GenreMenu"] = genresArrays.ToArray();
+
+
+
+            using (StreamWriter writer = new StreamWriter(jsonFilePath))
+            {
+                string json = JsonConvert.SerializeObject(menuData, Formatting.Indented);
+                writer.Write(json);
+            }
+        }
+
     }
 }
