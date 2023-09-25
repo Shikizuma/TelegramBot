@@ -37,7 +37,7 @@ namespace TelegramBot
 
 		public List<FilmModel> GetTopFilms(int count)
 		{
-			return Films.OrderByDescending(f => f.Rate).Take(count).ToList();
+			return Films.OrderByDescending(f => f.RateIMDB).Take(count).ToList();
 		}
 	}
 }
