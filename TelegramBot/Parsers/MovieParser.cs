@@ -18,27 +18,27 @@ namespace TelegramBot.Parsers
 
         private static void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
         {
-            //List<FilmModel> existingMovies = new List<FilmModel>();
+            List<FilmModel> existingMovies = new List<FilmModel>();
 
-            //if (File.Exists(jsonFilePath))
-            //{
-            //    using (StreamReader reader = new StreamReader(jsonFilePath))
-            //    {
-            //        string jsonContent = reader.ReadToEnd();
-            //        existingMovies = JsonConvert.DeserializeObject<List<FilmModel>>(jsonContent) ?? new List<FilmModel>();
-            //    }
-            //}
+            if (File.Exists(jsonFilePath))
+            {
+                using (StreamReader reader = new StreamReader(jsonFilePath))
+                {
+                    string jsonContent = reader.ReadToEnd();
+                    existingMovies = JsonConvert.DeserializeObject<List<FilmModel>>(jsonContent) ?? new List<FilmModel>();
+                }
+            }
 
-            //foreach (var movie in movies)
-            //{
-            //    if (!existingMovies.Any(existingMovie => existingMovie.Id == movie.Id))
-            //    {
-            //        existingMovies.Add(movie);
-            //    }
-            //}
+            foreach (var movie in movies)
+            {
+                if (!existingMovies.Any(existingMovie => existingMovie.Id == movie.Id))
+                {
+                    existingMovies.Add(movie);
+                }
+            }
             using (StreamWriter writer = new StreamWriter(jsonFilePath))
             {
-                string json = JsonConvert.SerializeObject(movies, Formatting.Indented);
+                string json = JsonConvert.SerializeObject(existingMovies, Formatting.Indented);
                 writer.Write(json);
             }
         }
