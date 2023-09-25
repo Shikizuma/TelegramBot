@@ -9,6 +9,7 @@ namespace TelegramBot.Models
 {
 	internal class FilmModel
 	{
+        public int Id { get; set; }
         public string Name { get; set; }
         public int ReleaseYear { get; set; }
         public string Description { get; set; }

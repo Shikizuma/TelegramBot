@@ -18,7 +18,7 @@ namespace TelegramBot.Parsers
 
         private static void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
         {
-            using (StreamWriter writer = new StreamWriter(jsonFilePath))
+            using (StreamWriter writer = new StreamWriter(jsonFilePath/*, true*/))
             {
                 string json = JsonConvert.SerializeObject(movies, Formatting.Indented);
                 writer.Write(json);
@@ -80,15 +80,6 @@ namespace TelegramBot.Parsers
 
         private static void ParseFilmInfo(FilmModel movie, HtmlDocument filmInfoDoc)
         {
-            //var linkNode = filmInfoDoc.DocumentNode.SelectSingleNode("//a[@data-fancybox='gallery']");
-            //if (linkNode != null)
-            //{
-            //    const string BaseUrl = "https://uakino.club";
-            //    var relativeUrl = linkNode.GetAttributeValue("href", "");
-            //    if(!relativeUrl.Contains(BaseUrl))
-            //        movie.Image = BaseUrl + relativeUrl;
-            //}
-
             var imgElement = filmInfoDoc.DocumentNode.SelectSingleNode(".//div[@class='film-poster']//a");
 
             if (imgElement != null)
@@ -167,8 +158,11 @@ namespace TelegramBot.Parsers
                                 }
                                 break;
                         }
+
+                      
                     }
                 }
+                movie.Id = GenerateID(movie.Name, movie.ReleaseYear, movie.Directors.FirstOrDefault().Value);
             }
         }
 
@@ -183,6 +177,21 @@ namespace TelegramBot.Parsers
                     collection.Add(value);
                 }
             }
+        }
+
+        private static int GenerateID(string name, int year, string director)
+        {
+            int id = year;
+            foreach(char c in name)
+            {
+                id += c;
+            }
+            foreach(char c in director)
+            {
+                id += c;
+            }
+
+            return id;
         }
 
         private static void ParseNodesAndAddToCollection(HtmlNode descNode, Dictionary<string, string> collection)

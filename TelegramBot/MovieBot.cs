@@ -152,9 +152,11 @@ namespace TelegramBot
 			List<FilmModel> filmRequest = null;
 
 			if (context == "За жанром")
-			{		
-				//filmRequest = Films.Where(f => f.Genre.Any(g => g.ToLower().Contains(searchTerm))).ToList();
-			}
+			{
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть жанр", replyMarkup: MarkupMenu.GenreMenu);
+                return;
+                //filmRequest = Films.Where(f => f.Genre.Any(g => g.ToLower().Contains(searchTerm))).ToList();
+            }
 			else if (context == "За назвою")
 			{
 				filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm)).ToList();
