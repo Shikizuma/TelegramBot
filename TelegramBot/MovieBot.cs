@@ -143,7 +143,6 @@ namespace TelegramBot
 
 			string responce = GetResponce(message.Text);
 			await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
-			//await Console.Out.WriteLineAsync(message.Chat.FirstName + ": " + message.Text);
 		}
 
 		private async Task HandleFilmRequest(Message message, string context)
@@ -200,7 +199,6 @@ namespace TelegramBot
 
 		async Task BotTakeError(ITelegramBotClient botClient, Exception ex, CancellationToken token)
 		{
-
 		}
 	}
 }

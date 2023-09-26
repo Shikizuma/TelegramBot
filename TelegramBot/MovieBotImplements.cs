@@ -24,10 +24,10 @@ namespace TelegramBot
 
 		public string GetResponce(string text)
 		{
-			var question = Questions.FirstOrDefault(q => q.Question.Contains(text.ToLower()));
+			var question = text.ToLower();
 			if (question != null)
 			{
-				return question.Responce;
+				return text;
 			}
 			else
 			{
