@@ -102,7 +102,7 @@ namespace TelegramBot
 
 			if (message.Text == "За жанром")
 			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, "За яким жанром?", replyMarkup: MarkupMenu.GenreMenu);
+				await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть жанр", replyMarkup: MarkupMenu.GenreMenu);
 				return;
 			}
 			if (message.Text == "За назвою")
@@ -152,9 +152,7 @@ namespace TelegramBot
 
 			if (context == "За жанром")
 			{
-                await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть жанр", replyMarkup: MarkupMenu.GenreMenu);
-                return;
-                //filmRequest = Films.Where(f => f.Genre.Any(g => g.ToLower().Contains(searchTerm))).ToList();
+                filmRequest = GetFilmsByGenre(searchTerm, 3);
             }
 			else if (context == "За назвою")
 			{

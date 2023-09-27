@@ -35,7 +35,14 @@ namespace TelegramBot
 			}
 		}
 
-		public List<FilmModel> GetTopFilms(int count)
+        public List<FilmModel> GetFilmsByGenre(string genre, int count)
+        {
+            List<FilmModel> filmsWithGenre = Films.Where(f => f.Genres.Contains(genre)).ToList();
+            return filmsWithGenre.GetRange(0, count);
+        }
+
+
+        public List<FilmModel> GetTopFilms(int count)
 		{
 			return Films.OrderByDescending(f => f.RateIMDB).Take(count).ToList();
 		}
