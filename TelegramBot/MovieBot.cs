@@ -147,26 +147,32 @@ namespace TelegramBot
 
 		private async Task HandleFilmRequest(Message message, string context)
 		{
-			string searchTerm = message.Text.ToLower();
+			string searchTerm = message.Text;
 			List<FilmModel> filmRequest = null;
+			int count = 0;
 
-			if (context == "За жанром")
+
+            if (context == "За жанром")
 			{
-                filmRequest = GetFilmsByGenre(searchTerm, 3);
+                count = GetFilmsByGenre(searchTerm).Count;
+                filmRequest = GetFilmsByGenre(searchTerm).GetRange(new Random().Next(count - 3), 3);
+               
             }
 			else if (context == "За назвою")
 			{
 				filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm)).ToList();
-			}
+				count = filmRequest.Count;
+
+            }
 
 			if (filmRequest != null && filmRequest.Count > 0)
 			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {filmRequest.Count}.");
 				foreach (var film in filmRequest)
 				{
 					await ShowFilm(message.Chat.Id, film);
 				}
-			}
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {count}", replyMarkup: MarkupMenu.MainMenu);
+            }
 			else
 			{
 				string errorMessage = (context == "За жанром") ?

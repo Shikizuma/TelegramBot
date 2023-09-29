@@ -13,7 +13,6 @@ namespace TelegramBot
 		
 		static void Main(string[] args)
 		{
-			string excelFile = Path.Combine(Environment.CurrentDirectory, "base.xlsx");
 			//var questions = app.GetQuestions();
 			var films = MovieParser.ParseMovies();
 
