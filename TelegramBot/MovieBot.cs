@@ -185,7 +185,7 @@ namespace TelegramBot
 
 		public async Task ShowFilm(long chat, FilmModel film)
 		{
-			//var buttons = InlineMenu.SetRate(film);
+			var buttons = InlineMenu.SetRate(film);
 			try
 			{
                 Console.WriteLine(film.Image);
@@ -193,7 +193,7 @@ namespace TelegramBot
 					chatId: chat,
 					photo: film.Image,
 					caption: film.ToString()
-					/*replyMarkup: buttons*/);
+					replyMarkup: buttons);
 			}
 			catch (Exception ex)
 			{
