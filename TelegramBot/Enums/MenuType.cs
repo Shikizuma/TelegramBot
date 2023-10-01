@@ -11,6 +11,6 @@ namespace TelegramBot.Enums
 		MainMenu,
 		SearchMenu,
 		GenreMenu,
-		InlineMenu
-	}
+        GradesInlineMenu
+    }
 }

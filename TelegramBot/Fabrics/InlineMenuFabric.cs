@@ -1,22 +1,43 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Enums;
+using TelegramBot.Models;
 
 namespace TelegramBot.Fabrics
 {
     internal class InlineMenuFabric
     {
-        public static InlineKeyboardButton CreateKey(string label)
+        public static InlineKeyboardButton CreateKey(FilmModel film, string label)
         {
-            return new InlineKeyboardButton(label);
+            string callbackData = "";
+
+            switch (label)
+            {
+                case "Дуже гарно! (⭐️⭐️⭐️⭐️⭐️)":
+                    callbackData = film.Name + "|5";
+                    break;
+                case "Непогано (⭐️⭐️⭐️⭐️)":
+                    callbackData = film.Name + "|4";
+                    break;
+                case "Нормально (⭐️⭐️⭐️)":
+                    callbackData = film.Name + "|3";
+                    break;
+                case "Погано (⭐️⭐️)":
+                    callbackData = film.Name + "|2";
+                    break;
+                case "Дуже погано (⭐️)":
+                    callbackData = film.Name + "|1";
+                    break;
+            }
+
+            return new InlineKeyboardButton(label)
+            {
+                CallbackData = callbackData
+            };
         }
 
-        public static InlineKeyboardButton[][] CreateKeys(MenuType menu)
+        public static InlineKeyboardButton[][] CreateKeys(FilmModel film, MenuType menu)
         {
             string json = File.ReadAllText("configInlineMenu.json");
             var jsonObject = JsonConvert.DeserializeObject<Dictionary<string, string[][]>>(json);
@@ -31,12 +52,11 @@ namespace TelegramBot.Fabrics
                 for (int j = 0; j < searchKeys[i].Length; j++)
                 {
                     string menuItem = searchKeys[i][j];
-                    menuItems[i][j] = CreateKey(menuItem);
+                    menuItems[i][j] = CreateKey(film, menuItem);
                 }
             }
 
             return menuItems;
         }
-
     }
 }

@@ -57,33 +57,32 @@ namespace TelegramBot
 			}
 			else if(update.Type == UpdateType.CallbackQuery)
 			{
-				//await GetCallBack(update.CallbackQuery);
+				await GetCallBack(update.CallbackQuery);
 			}
 		}
 
 		public async Task GetCallBack(CallbackQuery callback)
 		{
-			//if (callback.Data == null)
-			//	return;
+			if (callback.Data == null)
+				return;
 
-			//string[] messages = callback.Data.Split('|');
+			string[] messages = callback.Data.Split('|');
 
-			//string filmName = messages[0];
-			//int rate = Int32.Parse(messages[1]);
+			string filmName = messages[0];
+			int rate = Int32.Parse(messages[1]);
 
-			//var film = Films.FirstOrDefault(f => f.Name == filmName);
-			//if (film != null)
-			//{
-			//	double currentViews = film.Views++;
-			//	double rating = (currentViews * film.Rate + rate) / film.Views;
-			//	film.Rate = rating;
-			//	await botClient.SendTextMessageAsync(callback.From.Id, "Рейтинг: " + film.Rate);
-			//}
+			var film = Films.FirstOrDefault(f => f.Name == filmName);
+			if (film != null)
+			{
+				double currentViews = film.Views++;
+				double rating = (currentViews * film.Rate + rate) / film.Views;
+				film.Rate = rating;
+				await botClient.SendTextMessageAsync(callback.From.Id, "Рейтинг: " + film.Rate);
+			}
 		}
 
 		public async Task GetTextMessage(Message message)
 		{
-
 			if (Context.ContainsKey(message.Chat.Id))
 			{
 				string context = Context[message.Chat.Id];
@@ -110,7 +109,6 @@ namespace TelegramBot
 				await botClient.SendTextMessageAsync(message.Chat.Id, "Введіть назву фільма", replyMarkup: MarkupMenu.SearchMenu);
 				return;
 			}
-
 			if (message.Text == "Рандомний фільм")
 			{
 				var film = GetRandomFilm();
@@ -192,7 +190,7 @@ namespace TelegramBot
                 await botClient.SendPhotoAsync(
 					chatId: chat,
 					photo: film.Image,
-					caption: film.ToString()
+					caption: film.ToString(),
 					replyMarkup: buttons);
 			}
 			catch (Exception ex)
