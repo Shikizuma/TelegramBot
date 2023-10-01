@@ -13,6 +13,7 @@ using TelegramBot.Interface;
 using System.IO;
 using Telegram.Bot.Types.InputFiles;
 using TelegramBot.Parsers;
+using Newtonsoft.Json;
 
 namespace TelegramBot
 {
@@ -22,6 +23,9 @@ namespace TelegramBot
 		public QuestionModel[] Questions { private get; set; }
 		public List<FilmModel> Films { private get; set; }
 		Dictionary<long, string> Context { get; set; }
+
+		string jsonFilePath = "movies.json";
+
         public MovieBot(string token)
         {
 			botClient = new TelegramBotClient(token);	
@@ -77,7 +81,10 @@ namespace TelegramBot
 				double currentViews = film.Views++;
 				double rating = (currentViews * film.Rate + rate) / film.Views;
 				film.Rate = rating;
-				await botClient.SendTextMessageAsync(callback.From.Id, "Рейтинг: " + film.Rate);
+
+				SaveFilmsToJson();
+
+                await botClient.SendTextMessageAsync(callback.From.Id, "🤗Дякуємо за вашу оцінку! Рейтинг цього фільма став: " + film.Rate);
 			}
 		}
 
@@ -115,7 +122,6 @@ namespace TelegramBot
 				await ShowFilm(message.Chat.Id, film);
 				return;
 			}
-
 			if (message.Text == "Топ фільмів")
 			{
 				var films = GetTopFilms(5);
@@ -125,19 +131,16 @@ namespace TelegramBot
 				}
 				return;
 			}
-
 			if (message.Text == "Знайти фільм")
 			{
 				await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть тип пошуку", replyMarkup: MarkupMenu.SearchMenu);
 				return;
 			}
-
 			if (message.Text == "Назад у меню")
 			{
 				await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.MainMenu);
 				return;
 			}
-
 
 			string responce = GetResponce(message.Text);
 			await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
@@ -149,20 +152,16 @@ namespace TelegramBot
 			List<FilmModel> filmRequest = null;
 			int count = 0;
 
-
             if (context == "За жанром")
 			{
                 count = GetFilmsByGenre(searchTerm).Count;
-                filmRequest = GetFilmsByGenre(searchTerm).GetRange(new Random().Next(count - 3), 3);
-               
+                filmRequest = GetFilmsByGenre(searchTerm).GetRange(new Random().Next(count - 3), 3); 
             }
 			else if (context == "За назвою")
 			{
-				filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm)).ToList();
+				filmRequest = Films.Where(f=> f.Name.ToLower().Contains(searchTerm.ToLower())).ToList();
 				count = filmRequest.Count;
-
             }
-
 			if (filmRequest != null && filmRequest.Count > 0)
 			{
 				foreach (var film in filmRequest)
@@ -202,5 +201,14 @@ namespace TelegramBot
 		async Task BotTakeError(ITelegramBotClient botClient, Exception ex, CancellationToken token)
 		{
 		}
-	}
+
+        private void SaveFilmsToJson()
+        {
+            using (StreamWriter writer = new StreamWriter(jsonFilePath))
+            {
+                string json = JsonConvert.SerializeObject(Films, Formatting.Indented);
+                writer.Write(json);
+            }
+        }
+    }
 }
