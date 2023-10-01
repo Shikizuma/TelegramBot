@@ -14,19 +14,19 @@ namespace TelegramBot.Fabrics
 
             switch (label)
             {
-                case "Дуже гарно! (⭐️⭐️⭐️⭐️⭐️)":
+                case "Дуже гарно! [⭐️⭐️⭐️⭐️⭐️]":
                     callbackData = film.Name + "|5";
                     break;
-                case "Непогано (⭐️⭐️⭐️⭐️)":
+                case "Гарно [⭐️⭐️⭐️⭐️]":
                     callbackData = film.Name + "|4";
                     break;
-                case "Нормально (⭐️⭐️⭐️)":
+                case "Нормально [⭐️⭐️⭐️]":
                     callbackData = film.Name + "|3";
                     break;
-                case "Погано (⭐️⭐️)":
+                case "Погано [⭐️⭐️]":
                     callbackData = film.Name + "|2";
                     break;
-                case "Дуже погано (⭐️)":
+                case "Дуже погано [⭐️]":
                     callbackData = film.Name + "|1";
                     break;
             }

@@ -175,7 +175,7 @@ namespace TelegramBot.Parsers
 
                                             CultureInfo culture = CultureInfo.InvariantCulture;
                                             movie.RateIMDB = double.Parse(imdbRating, culture);
-                                            movie.Views = int.Parse(numberOfVotes.Replace(" ", ""));
+                                            movie.ViewsIMDB = int.Parse(numberOfVotes.Replace(" ", ""));
                                         }
                                     }
                                 }

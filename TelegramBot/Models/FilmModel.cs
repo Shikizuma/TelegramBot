@@ -20,6 +20,7 @@ namespace TelegramBot.Models
         public string Duration { get; set; }
         public double RateIMDB { get; set; }
         public double Rate { get; set; }
+        public int ViewsIMDB { get; set; }
         public int Views { get; set; }
         public string Image { get; set; }
         public string MovieUrl { get; set; }
@@ -47,7 +48,9 @@ namespace TelegramBot.Models
                  $"📽 Режисер: {directorString}\n" +
                  $"👥 Актори: {actorsString}\n" +
                  $"👀 Переглядів: {Views}\n" +
-                 $"⭐ Рейтинг: {RateIMDB} / 10\n";
+                 $"⭐ Рейтинг: {Rate} / 5\n" +
+                 $"👁 Переглядів IMDB: {ViewsIMDB}\n" +
+                 $"👑 Рейтинг IMDB: {RateIMDB} / 10\n";
 
         }
     }
