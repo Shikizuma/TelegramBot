@@ -14,6 +14,7 @@ using System.IO;
 using Telegram.Bot.Types.InputFiles;
 using TelegramBot.Parsers;
 using Newtonsoft.Json;
+using Telegram.Bot.Types.InlineQueryResults;
 
 namespace TelegramBot
 {
@@ -70,22 +71,23 @@ namespace TelegramBot
 			if (callback.Data == null)
 				return;
 
-			string[] messages = callback.Data.Split('|');
+            string[] messages = callback.Data.Split('|');
 
-			string filmName = messages[0];
-			int rate = Int32.Parse(messages[1]);
+            string filmName = messages[0];
+            int rate = Int32.Parse(messages[1]);
 
-			var film = Films.FirstOrDefault(f => f.Name == filmName);
-			if (film != null)
-			{
-				double currentViews = film.Views++;
-				double rating = (currentViews * film.Rate + rate) / film.Views;
-				film.Rate = rating;
+            var film = Films.FirstOrDefault(f => f.Name == filmName);
+            if (film != null)
+            {
+                double currentViews = film.Views++;
+                double rating = (currentViews * film.Rate + rate) / film.Views;
+                film.Rate = rating;
 
-				SaveFilmsToJson();
+                SaveFilmsToJson();
 
                 await botClient.SendTextMessageAsync(callback.From.Id, "🤗Дякуємо за вашу оцінку! Рейтинг цього фільма став: " + film.Rate);
-			}
+            }
+             
 		}
 
 		public async Task GetTextMessage(Message message)
@@ -183,6 +185,7 @@ namespace TelegramBot
 		public async Task ShowFilm(long chat, FilmModel film)
 		{
 			var buttons = InlineMenu.SetRate(film);
+
 			try
 			{
                 Console.WriteLine(film.Image);
@@ -194,7 +197,10 @@ namespace TelegramBot
 			}
 			catch (Exception ex)
 			{
-                Console.WriteLine("Error: "+ ex.Message);
+                Console.WriteLine(film.ToString());
+                Console.WriteLine(film.Image);
+                Console.WriteLine(film.MovieUrl);
+                Console.WriteLine("Error: " + ex.HelpLink + ex.Message);
             }
 		}
 

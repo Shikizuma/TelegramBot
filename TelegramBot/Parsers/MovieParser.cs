@@ -204,16 +204,20 @@ namespace TelegramBot.Parsers
 
         private static int GenerateID(string name, int year, string director)
         {
+            
             int id = year;
             foreach(char c in name)
             {
                 id += c;
             }
-            foreach(char c in director)
+            if (director != null)
             {
-                id += c;
+                foreach (char c in director)
+                {
+                    id += c;
+                }
             }
-
+       
             return id;
         }
 

@@ -29,10 +29,19 @@ namespace TelegramBot.Fabrics
                 case "Дуже погано [⭐️]":
                     callbackData = film.Name + "|1";
                     break;
+                case "Ланка на фільм":
+                    callbackData = film.MovieUrl;
+                    break;
             }
-
-            return new InlineKeyboardButton(label)
+            if(label == "Ланка на фільм")
             {
+                return new InlineKeyboardButton(label)
+                {
+                    Url = callbackData
+                };
+            }
+            return new InlineKeyboardButton(label)
+            {            
                 CallbackData = callbackData
             };
         }
