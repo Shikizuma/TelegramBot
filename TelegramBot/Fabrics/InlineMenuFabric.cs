@@ -15,29 +15,36 @@ namespace TelegramBot.Fabrics
             switch (label)
             {
                 case "Дуже гарно! [⭐️⭐️⭐️⭐️⭐️]":
-                    callbackData = film.Name + "|5";
+                    callbackData = film.Id + "|5";
                     break;
                 case "Гарно [⭐️⭐️⭐️⭐️]":
-                    callbackData = film.Name + "|4";
+                    callbackData = film.Id + "|4";
                     break;
                 case "Нормально [⭐️⭐️⭐️]":
-                    callbackData = film.Name + "|3";
+                    callbackData = film.Id + "|3";
                     break;
                 case "Погано [⭐️⭐️]":
-                    callbackData = film.Name + "|2";
+                    callbackData = film.Id + "|2";
                     break;
                 case "Дуже погано [⭐️]":
-                    callbackData = film.Name + "|1";
+                    callbackData = film.Id + "|1";
                     break;
                 case "Ланка на фільм":
-                    callbackData = film.MovieUrl;
+                    callbackData = film.Id.ToString();
                     break;
             }
-            if(label == "Ланка на фільм")
+            byte[] byteData = System.Text.Encoding.UTF8.GetBytes("id" + callbackData); 
+            if (byteData.Length > 64)
             {
+                Console.WriteLine($"Warning: callbackData exceeds the limit of 64 bytes: {byteData.Length} bytes. Data: {callbackData}");
+            }
+            if (label == "Ланка на фільм")
+            {
+               
+                Console.WriteLine("id" + callbackData);
                 return new InlineKeyboardButton(label)
                 {
-                    Url = callbackData
+                    CallbackData = "id" + callbackData,
                 };
             }
             return new InlineKeyboardButton(label)

@@ -71,23 +71,32 @@ namespace TelegramBot
 			if (callback.Data == null)
 				return;
 
-            string[] messages = callback.Data.Split('|');
-
-            string filmName = messages[0];
-            int rate = Int32.Parse(messages[1]);
-
-            var film = Films.FirstOrDefault(f => f.Name == filmName);
-            if (film != null)
+            if (callback.Data.StartsWith("id"))
             {
-                double currentViews = film.Views++;
-                double rating = (currentViews * film.Rate + rate) / film.Views;
-                film.Rate = rating;
-
-                SaveFilmsToJson();
-
-                await botClient.SendTextMessageAsync(callback.From.Id, "🤗Дякуємо за вашу оцінку! Рейтинг цього фільма став: " + film.Rate);
+				int filmID = int.Parse(callback.Data.Replace("id", ""));
+				FilmModel film = Films.Where(f => f.Id == filmID).First();
+				Console.WriteLine(filmID);
+                await botClient.SendTextMessageAsync(callback.From.Id, $"Перейдіть за посиланням:{film.MovieUrl}");
             }
-             
+			else
+            {
+                string[] messages = callback.Data.Split('|');
+
+                int filmId = int.Parse(messages[0]);
+                int rate = Int32.Parse(messages[1]);
+
+                var film = Films.FirstOrDefault(f => f.Id == filmId);
+                if (film != null)
+                {
+                    double currentViews = film.Views++;
+                    double rating = (currentViews * film.Rate + rate) / film.Views;
+                    film.Rate = rating;
+
+                    SaveFilmsToJson();
+
+                    await botClient.SendTextMessageAsync(callback.From.Id, "🤗Дякуємо за вашу оцінку! Рейтинг цього фільма став: " + film.Rate);
+                }
+            }               
 		}
 
 		public async Task GetTextMessage(Message message)
