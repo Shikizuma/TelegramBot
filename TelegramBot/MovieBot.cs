@@ -206,9 +206,6 @@ namespace TelegramBot
 			}
 			catch (Exception ex)
 			{
-                Console.WriteLine(film.ToString());
-                Console.WriteLine(film.Image);
-                Console.WriteLine(film.MovieUrl);
                 Console.WriteLine("Error: " + ex.HelpLink + ex.Message);
             }
 		}

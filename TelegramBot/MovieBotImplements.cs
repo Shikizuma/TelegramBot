@@ -37,11 +37,8 @@ namespace TelegramBot
 
         public List<FilmModel> GetFilmsByGenre(string genre)
         {
-            List<FilmModel> filmsWithGenre = new ();
-            for (int i = 0; i < 3; i++)
-			{
-				filmsWithGenre = Films.Where(f => f.Genres.Contains(genre)).ToList();
-            }
+            List<FilmModel> filmsWithGenre = Films.Where(f => f.Genres.Contains(genre)).ToList();
+      
            
             return filmsWithGenre;
         }
