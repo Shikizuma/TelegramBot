@@ -157,41 +157,50 @@ namespace TelegramBot
 			await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
 		}
 
-		private async Task HandleFilmRequest(Message message, string context)
-		{
-			string searchTerm = message.Text;
-			List<FilmModel> filmRequest = null;
-			int count = 0;
+        private async Task HandleFilmRequest(Message message, string context)
+        {
+            string searchTerm = message.Text;
+            List<FilmModel> filmRequest = null;
+            int count = 0;
 
             if (context == "За жанром")
-			{
-                count = GetFilmsByGenre(searchTerm).Count;
-                filmRequest = GetFilmsByGenre(searchTerm).GetRange(new Random().Next(count - 3), 3); 
+            {
+                filmRequest = GetFilmsByGenre(searchTerm);
             }
-			else if (context == "За назвою")
-			{
-				filmRequest = Films.Where(f=> f.Name.ToLower().Contains(searchTerm.ToLower())).ToList();
-				count = filmRequest.Count;
+            else if (context == "За назвою")
+            {
+                filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm.ToLower())).ToList();
             }
-			if (filmRequest != null && filmRequest.Count > 0)
-			{
-				foreach (var film in filmRequest)
-				{
-					await ShowFilm(message.Chat.Id, film);
-				}
+
+            count = filmRequest?.Count ?? 0;
+
+            if (count > 0)
+            {
+                if (context == "За жанром")
+                {
+                    int random = new Random().Next(0, count);
+                    filmRequest = new List<FilmModel> { filmRequest[random] };
+                }
+
+                foreach (var film in filmRequest)
+                {
+                    await ShowFilm(message.Chat.Id, film);
+                }
+
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {count}", replyMarkup: MarkupMenu.MainMenu);
             }
-			else
-			{
-				string errorMessage = (context == "За жанром") ?
-					$"Не вдалось знайти фільм по цьому жанру {searchTerm}." :
-					$"Не вдалось знайти фільм по цій назві {searchTerm}.";
+            else
+            {
+                string errorMessage = (context == "За жанром") ?
+                    $"Не вдалось знайти фільм по цьому жанру {searchTerm}." :
+                    $"Не вдалось знайти фільм по цій назві {searchTerm}.";
 
-				await botClient.SendTextMessageAsync(message.Chat.Id, errorMessage, replyMarkup: MarkupMenu.MainMenu);
-			}
-		}
+                await botClient.SendTextMessageAsync(message.Chat.Id, errorMessage, replyMarkup: MarkupMenu.MainMenu);
+            }
+        }
 
-		public async Task ShowFilm(long chat, FilmModel film)
+
+        public async Task ShowFilm(long chat, FilmModel film)
 		{
 			var buttons = InlineMenu.SetRate(film);
 
