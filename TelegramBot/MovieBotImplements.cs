@@ -12,7 +12,7 @@ using Telegram.Bot.Types.InputFiles;
 
 namespace TelegramBot
 {
-	partial class MovieBot /* : IMovieBot*/
+    internal partial class MovieBot
 	{
 		static Random random = new Random();
 		

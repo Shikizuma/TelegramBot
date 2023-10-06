@@ -15,23 +15,27 @@ using Telegram.Bot.Types.InputFiles;
 using TelegramBot.Parsers;
 using Newtonsoft.Json;
 using Telegram.Bot.Types.InlineQueryResults;
+using TelegramBot.Handlers;
 
 namespace TelegramBot
 {
-	partial class MovieBot
+    internal partial class MovieBot
 	{
 		TelegramBotClient botClient;
 		public QuestionModel[] Questions { private get; set; }
 		public List<FilmModel> Films { private get; set; }
 		Dictionary<long, string> Context { get; set; }
+        MessageHandler messageHandler { get; set; }
 
-		string jsonFilePath = "movies.json";
+        string jsonFilePath = "movies.json";
 
         public MovieBot(string token)
         {
 			botClient = new TelegramBotClient(token);	
 			Context = new Dictionary<long, string>();
-		}
+			messageHandler = new(Films, botClient, Context);
+
+        }
 
 		public void Start()
 		{
@@ -101,104 +105,61 @@ namespace TelegramBot
 
 		public async Task GetTextMessage(Message message)
 		{
-			if (Context.ContainsKey(message.Chat.Id))
-			{
-				string context = Context[message.Chat.Id];
-				Context[message.Chat.Id] = message.Text;
-
-				if (context == "За жанром" || context == "За назвою")
-				{
-					await HandleFilmRequest(message, context);
-					return;
-				}
-			}
-			else
-			{
-				Context.Add(message.Chat.Id, message.Text);
-			}
-
-			if (message.Text == "За жанром")
-			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть жанр", replyMarkup: MarkupMenu.GenreMenu);
-				return;
-			}
-			if (message.Text == "За назвою")
-			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, "Введіть назву фільма", replyMarkup: MarkupMenu.SearchMenu);
-				return;
-			}
-			if (message.Text == "Рандомний фільм")
-			{
-				var film = GetRandomFilm();
-				await ShowFilm(message.Chat.Id, film);
-				return;
-			}
-			if (message.Text == "Топ фільмів")
-			{
-				var films = GetTopFilms(5);
-				foreach (var film in films)
-				{
-					await ShowFilm(message.Chat.Id, film);
-				}
-				return;
-			}
-			if (message.Text == "Знайти фільм")
-			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть тип пошуку", replyMarkup: MarkupMenu.SearchMenu);
-				return;
-			}
-			if (message.Text == "Назад у меню")
-			{
-				await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.MainMenu);
-				return;
-			}
-
-			string responce = GetResponce(message.Text);
-			await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
-		}
-
-        private async Task HandleFilmRequest(Message message, string context)
-        {
-            string searchTerm = message.Text;
-            List<FilmModel> filmRequest = null;
-            int count = 0;
-
-            if (context == "За жанром")
-            {
-                filmRequest = GetFilmsByGenre(searchTerm);
-            }
-            else if (context == "За назвою")
-            {
-                filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm.ToLower())).ToList();
-            }
-
-            count = filmRequest.Count;
-
-            if (count > 0)
-            {
-                if (context == "За жанром")
-                {
-                    int random = new Random().Next(0, count);
-                    filmRequest = new List<FilmModel> { filmRequest[random] };
-                }
-
-                foreach (var film in filmRequest)
-                {
-                    await ShowFilm(message.Chat.Id, film);
-                }
-
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Всього знайдено фільмів: {count}", replyMarkup: MarkupMenu.MainMenu);
-            }
-            else
-            {
-                string errorMessage = (context == "За жанром") ?
-                    $"Не вдалось знайти фільм по цьому жанру {searchTerm}." :
-                    $"Не вдалось знайти фільм по цій назві {searchTerm}.";
-
-                await botClient.SendTextMessageAsync(message.Chat.Id, errorMessage, replyMarkup: MarkupMenu.MainMenu);
-            }
+            messageHandler.HandleUserMessage(message);
+            //if (Context.ContainsKey(message.Chat.Id))
+            //{
+            //	string context = Context[message.Chat.Id];
+            //	Context[message.Chat.Id] = message.Text;
+            //	if (context == "За жанром" || context == "За назвою")
+            //	{
+            //		await HandleFilmRequest(message, context);
+            //		return;
+            //	}
+            //}
+            //else
+            //{
+            //	Context.Add(message.Chat.Id, message.Text);
+            //}
+            //if (message.Text == "За жанром")
+            //{
+            //	await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть жанр", replyMarkup: MarkupMenu.GenreMenu);
+            //	return;
+            //}
+            //if (message.Text == "За назвою")
+            //{
+            //	await botClient.SendTextMessageAsync(message.Chat.Id, "Введіть назву фільма", replyMarkup: MarkupMenu.SearchMenu);
+            //	return;
+            //}
+            //if (message.Text == "Рандомний фільм")
+            //{
+            //	var film = GetRandomFilm();
+            //	await ShowFilm(message.Chat.Id, film);
+            //	return;
+            //}
+            //if (message.Text == "Топ фільмів")
+            //{
+            //	var films = GetTopFilms(5);
+            //	foreach (var film in films)
+            //	{
+            //		await ShowFilm(message.Chat.Id, film);
+            //	}
+            //	return;
+            //}
+            //if (message.Text == "Знайти фільм")
+            //{
+            //	await botClient.SendTextMessageAsync(message.Chat.Id, "Оберіть тип пошуку", replyMarkup: MarkupMenu.SearchMenu);
+            //	return;
+            //}
+            //if (message.Text == "Назад у меню")
+            //{
+            //	await botClient.SendTextMessageAsync(message.Chat.Id, "Ви повернулись у головне меню", replyMarkup: MarkupMenu.MainMenu);
+            //	return;
+            //}
+            //string responce = GetResponce(message.Text);
+            //await botClient.SendTextMessageAsync(message.Chat.Id, responce, replyMarkup: MarkupMenu.MainMenu);
         }
 
+     
 
         public async Task ShowFilm(long chat, FilmModel film)
 		{
