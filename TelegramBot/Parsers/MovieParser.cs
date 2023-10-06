@@ -18,7 +18,7 @@ namespace TelegramBot.Parsers
     {
         private const string BaseUrl = "https://uakino.club/filmy/page/1/";
 
-        private static void SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
+        private static List<FilmModel> SaveMoviesToJson(List<FilmModel> movies, string jsonFilePath)
         {
             List<FilmModel> existingMovies = new List<FilmModel>();
 
@@ -46,6 +46,8 @@ namespace TelegramBot.Parsers
                 string json = JsonConvert.SerializeObject(existingMovies, Formatting.Indented);
                 writer.Write(json);
             }
+
+            return existingMovies;
         }
 
         public static List<FilmModel> ParseMovies()
@@ -68,7 +70,7 @@ namespace TelegramBot.Parsers
                 }
             }
 
-            SaveMoviesToJson(movies, "movies.json");
+            movies = SaveMoviesToJson(movies, "movies.json");
 
             return movies;
         }

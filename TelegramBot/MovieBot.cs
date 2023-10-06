@@ -172,7 +172,7 @@ namespace TelegramBot
                 filmRequest = Films.Where(f => f.Name.ToLower().Contains(searchTerm.ToLower())).ToList();
             }
 
-            count = filmRequest?.Count ?? 0;
+            count = filmRequest.Count;
 
             if (count > 0)
             {
