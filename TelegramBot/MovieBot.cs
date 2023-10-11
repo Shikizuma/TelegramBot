@@ -105,7 +105,7 @@ namespace TelegramBot
 
 		public async Task GetTextMessage(Message message)
 		{
-            messageHandler.HandleUserMessage(message);
+            await messageHandler.HandleUserMessage(message);
             //if (Context.ContainsKey(message.Chat.Id))
             //{
             //	string context = Context[message.Chat.Id];
