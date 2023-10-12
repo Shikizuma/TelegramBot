@@ -232,7 +232,8 @@ namespace TelegramBot.Parsers
                 {
                     var url = node.GetAttributeValue("href", "");
                     var value = node.InnerText.Trim();
-                    collection.Add(url, value);
+                    if(collection.ContainsKey(url))
+                        collection.Add(url, value);
                 }
             }
         }
